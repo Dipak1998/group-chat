@@ -18,7 +18,7 @@ module.exports = (sequelize, Sequelize) => {
       mobile_no: {
         type: Sequelize.STRING
       },
-      role:{
+      role_id:{
         type: Sequelize.INTEGER
       },
       status:{

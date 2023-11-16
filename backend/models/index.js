@@ -23,9 +23,12 @@ db.chat_group = require("./chat_group.models")(sequelize, Sequelize);
 db.message = require("../models/message.models")(sequelize, Sequelize);
 
 /* releated tables */
-// db.role.hasMany(db.user,{ foreignKey: 'role' });
-// db.user.belongsTo(db.role,{ foreignKey: 'id' });
+db.role.hasMany(db.user, { foreignKey: 'role_id' });
+db.user.belongsTo(db.role, { foreignKey: 'role_id' });
 
+// Correct the association for chat_group and user
+db.user.hasMany(db.chat_group, { foreignKey: 'user_id' });
+db.chat_group.belongsTo(db.user, { foreignKey: 'user_id'});
 
 
 

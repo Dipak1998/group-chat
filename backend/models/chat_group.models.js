@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
       members: {
         type: Sequelize.JSON
       },
-      group_admin: {
+      user_id: {
         type: Sequelize.INTEGER
       },
       status:{
