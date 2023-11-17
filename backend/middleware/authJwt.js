@@ -16,7 +16,6 @@ verifyToken = (req, res, next) => {
         error:err
       });
     }
-    console.log("decoded token ", decoded)
     req.userId = decoded.id;
     next();
   });

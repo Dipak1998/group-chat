@@ -1,4 +1,3 @@
-const { verifySignUp } = require("../middleware");
 const { authJwt} = require('../middleware');
 
 const auth_controller = require("../controller/auth.controller");
@@ -10,13 +9,7 @@ module.exports = function(app) {
     );
     next();
   });
-  app.post(
-    "/api/auth/signup",
-    [
-      verifySignUp.checkDuplicateUsernameOrEmail
-    ],
-    auth_controller.signup
-  );
+
   app.post("/api/auth/signin", auth_controller.signin);
   
   // Change user password 

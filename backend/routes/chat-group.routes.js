@@ -13,4 +13,18 @@ module.exports = (app)=>{
     ],
     chat_group.groupList);
 
+
+    // Add member in group
+
+    app.put("/api/add_members", [
+      authJwt.verifyToken
+    ],
+    chat_group.addMembers);
+
+    // Delete a group 
+
+    app.put("/api/group/:group_id", [
+      authJwt.verifyToken,
+    ],chat_group.inactiveGroup); 
+
 }

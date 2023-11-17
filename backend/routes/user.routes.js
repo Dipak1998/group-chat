@@ -1,16 +1,17 @@
-const { verifySignUp } = require("../middleware");
+const { verifyCreateUser } = require("../middleware"); //verifyCreateUser
 const { authJwt} = require('../middleware');
 module.exports = (app)=>{
     const user = require('../controller/user.controller');
     // Create a new user
-    app.post("/api/add-user", [
+    app.post("/api/add_user", [
         authJwt.verifyToken,
         authJwt.isAdmin,
-        verifySignUp.checkDuplicateUsernameOrEmail
-      ],user.create);
+        verifyCreateUser.checkDuplicateUsernameOrEmail,
+        verifyCreateUser.checkDuplicateMobileNumber
+      ],user.createUser);
 
     // Get all users
-    app.get("/api/user", [
+    app.get("/api/users", [
       authJwt.verifyToken,
       // authJwt.isAdmin,
     ],
@@ -26,12 +27,12 @@ module.exports = (app)=>{
     app.put("/api/user/:user_id",[
       authJwt.verifyToken,
       authJwt.isAdmin,
-    ], user.update);
+    ], user.updateUser);
 
     // Delete a user with Id
     app.delete("/api/user/:user_id", [
       authJwt.verifyToken,
       authJwt.isAdmin,
-    ],user.delete); 
+    ],user.deleteUser); 
 
 }

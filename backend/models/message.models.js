@@ -7,19 +7,42 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true
       },
       message: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+        validate:{
+          notNull:{
+            msg:"Message is required."
+          }
+        }
       },
       group_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        validate:{
+          notNull:{
+            msg:"Group is required."
+          }
+        }
       },
       sender: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        validate:{
+          notNull:{
+            msg:"Sender is required."
+          }
+        }
       },
       likes: {
         type: Sequelize.INTEGER
       },
       like_user_id: {
-        type: Sequelize.JSON
+        type: Sequelize.JSON,
+        validate:{
+          isJSON:{
+            msg:"va;lue should be valid json."
+          }
+        }
       },
       status:{
         type: Sequelize.INTEGER
