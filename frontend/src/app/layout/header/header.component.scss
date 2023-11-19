@@ -1,0 +1,53 @@
+:host{
+    background-color: #FFFFFF;
+    color: black;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    .header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .brand__name {
+            flex:1;
+            img{
+                width: 90px;
+            }
+        }
+
+        .menu{
+            flex:2;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            .menu__items{
+                margin: 0 10px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+            .active{
+                color: rgb(255, 230, 0);
+            }
+        }
+
+        .header__item {
+            flex:1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            .username{
+                // margin: 0 10px;
+            }
+            .logout{
+                cursor: pointer;
+                background: transparent;
+                border: none;
+                color: #FFFFFF;
+            }
+        }
+    }
+}

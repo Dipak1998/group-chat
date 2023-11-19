@@ -29,8 +29,9 @@ exports.signin = (req, res) => {
         { id: user.id ,
           name:user.name,
           email:user.email, 
-          role:user.role,
-          mobile_no:user.mobile_no
+          role_id:user.role_id,
+          mobile_no:user.mobile_no,
+          is_admin: (user.role_id === 1 )
         }, 
         config.secret, {
         expiresIn: 86400 // 24 hours

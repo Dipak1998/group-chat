@@ -1,0 +1,135 @@
+.dashboard{
+    padding: 40px;
+
+    .action__btn{
+        margin-bottom: 20px;
+        
+        .refresh__btn{
+            margin-left: 10px;
+        }
+    }
+}
+
+.form__wrapper{
+    position: relative;
+    .close__btn{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: red;
+        background: transparent;
+        cursor: pointer;
+        &:hover{
+            background-color: transparent;
+        }
+    }
+    .heading{
+        margin-bottom: 20px;
+    }
+    .mat-form-field{
+        width: 100%;
+    }
+    .submit button{
+        width: 100%;
+    }
+    
+
+}
+
+/* Table styles */
+/* ---------------------------------------------------------- */
+.mat-table {
+    width: 100%;
+}
+
+.float-right {
+    float: right;
+}
+
+/* ---------------------------------------------------------- */
+
+/* Header styles */
+/* ---------------------------------------------------------- */
+.mat-header-cell {
+    background-color: #0e3b6f;
+    color: #ffff;
+    text-align: center;
+}
+
+.mat-header-cell:not(:first-child) {
+    padding-left: 0;
+}
+
+/* Style just the text in the header */
+.mat-header-cell span {
+    font-weight: 600;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: 0.5px;
+}
+
+/* Round the top table corners */
+.mat-header-cell:first-child {
+    border-top-left-radius: 5px;
+}
+
+.mat-header-cell:last-child {
+    border-top-right-radius: 5px;
+}
+
+.mat-header-row {
+    height: 3em;
+}
+
+.btn-icon {
+    height: 17px;
+    width: 17px;
+    background-color: #393939;
+    border: none;
+}
+
+
+.header {
+    padding: 5px;
+}
+
+
+/* Row styles */
+/* ---------------------------------------------------------- */
+.mat-row:nth-child(2n) {
+    background-color: #e5e2e2;
+}
+
+/* ---------------------------------------------------------- */
+
+/* Cell styles */
+/* ---------------------------------------------------------- */
+.mat-cell {
+    border: none;
+    text-align: center;
+}
+.edit__btn{
+    color: #3f51b5;
+    margin: 0 5px;
+    cursor: pointer;
+    mat-icon{
+        font-size: 20px;
+    }
+}
+.delete__btn{
+    color: red;
+    margin: 0 5px;
+    cursor: pointer;
+    mat-icon{
+        font-size: 20px;
+    }
+}
+.green-svg {
+    fill: #6dd400;
+}
+
+.gray-svg {
+    fill: #b2b4b6;
+}
+
+/* ---------------------------------------------------------- */

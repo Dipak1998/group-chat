@@ -1,17 +1,21 @@
 const users = [];
 const messages = [];
-const jwt = require('jsonwebtoken');
+const { authSocket } = require('../middleware')
 module.exports = (io) => {
     console.log("socket is on");
     // io.use((socket, next) => {
     //     // Use the cors middleware for Socket.IO
     //     cors()(socket.request, socket.request.res, next);
     //   });
+    // Apply authentication middleware to the Socket.IO instance
+    io.use((socket, next) => {
+        // Assuming authSocket.authenticateSocket is your authentication middleware
+        authSocket.verifySocket(socket, next);
+    });
     io.on('connection', (socket) => {
-        console.log('Handshake done');
-
+        console.log('Handshake done',socket.handshake.query);
         // Handle joining a group
-        socket.on('joinGroup', ({token, email, group_id }) => {
+        socket.on('joinGroup', ({email, group_id }) => {
             const user = { id: socket.id, email, group_id };
             users.push(user);
             socket.join(group_id);

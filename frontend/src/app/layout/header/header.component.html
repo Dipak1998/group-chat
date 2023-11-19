@@ -1,0 +1,18 @@
+<div class="header">
+    <div class="brand__name">
+        <img src="assets/images/logo_white.png" alt="">
+    </div>
+    <div class="menu">
+        <div routerLinkActive="active"  routerLink="dashboard" class="menu__items">Dashboard</div>
+        <div routerLinkActive="active"  routerLink="chat-home" class="menu__items">Chat</div>
+    </div>
+    <div class="header__item">
+        <div class="username">
+            {{userName}}
+        </div>
+        <button type="button"  (click)="onLogoutClicked()" class="logout">
+            <mat-icon>account_circle</mat-icon>
+        </button>
+    </div>
+</div>
+

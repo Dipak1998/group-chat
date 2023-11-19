@@ -1,0 +1,72 @@
+.login__wrapper{
+    // background-color: #e7e7e7;
+    // background-image: url('assets/images/login-bg.jpg');
+    // background-image: url('../../../assets/images/login-bg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    .bg-abs{
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      position: absolute;
+    }
+
+    .mat-card {
+        padding: 30px 30px 60px 30px !important;
+    }
+    // .mat-card-title{
+    //     margin-bottom: 40px !important;
+    // }
+    .mat-form-field {
+        width: 100%;
+        min-width: 360px;
+      }
+    
+      mat-card-title,
+      mat-card-content {
+        display: flex;
+      }
+      .brand__name{
+        justify-content: center;
+        img{
+          width: 120px;
+        }
+      }
+    
+      .error {
+        padding: 16px;
+        width: 300px;
+        color: white;
+        background-color: red;
+      }
+    
+      .submit {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        button{ 
+            width: 120px;
+            color: #ffffff;
+            background-color: #3661E9;
+            padding: 4px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+      }
+      .disabled{
+        background-color: #688afa !important;
+  
+      }
+}
+
+
