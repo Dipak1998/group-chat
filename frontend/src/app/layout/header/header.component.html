@@ -3,7 +3,7 @@
         <img src="assets/images/logo_white.png" alt="">
     </div>
     <div class="menu">
-        <div routerLinkActive="active"  routerLink="dashboard" class="menu__items">Dashboard</div>
+        <div *ngIf="isAdmin" routerLinkActive="active"  routerLink="dashboard" class="menu__items">Dashboard</div>
         <div routerLinkActive="active"  routerLink="chat-home" class="menu__items">Chat</div>
     </div>
     <div class="header__item">

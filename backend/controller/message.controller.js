@@ -3,11 +3,11 @@ const Message = db.message
 const ChatGroup = db.chat_group
 const User = db.user
 const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
+const {Op, fn, literal} = require('sequelize');
 // send a message 
 exports.sendMessage = async (req, res) => {
     try {
-        const { message, group_id, sender } = req.body;
+        const { message, group_id, user_id } = req.body;
 
         if (!message) {
             return res.status(406).send({ message: "message is required." });
@@ -17,8 +17,8 @@ exports.sendMessage = async (req, res) => {
             return res.status(406).send({ message: "group name is required." });
         }
 
-        if (!sender) {
-            return res.status(406).send({ message: "sender is required." });
+        if (!user_id) {
+            return res.status(406).send({ message: "user_id is required." });
         }
 
         const groupNameExist = await ChatGroup.findOne({ where: { id: group_id, status:1 } });
@@ -26,13 +26,13 @@ exports.sendMessage = async (req, res) => {
             return res.status(406).send({ message: "group name is not exist." });
         }
 
-        const senderExist = await User.findOne({where: {id:sender, status:1}});
-        if (!senderExist) {
+        const user_idExist = await User.findOne({where: {id:user_id, status:1}});
+        if (!user_idExist) {
             return res.status(406).send({ message: "user is not exist." });
 
         }
 
-        const newMessage = await Message.create({ message, group_id, sender, status: 1 });
+        const newMessage = await Message.create({ message, group_id, user_id, status: 1 });
 
         /** Broadcasting the message to the group */
         try {
@@ -79,9 +79,26 @@ exports.allMessage = async (req, res) => {
                 data: []
             })
         }
-
-        const messages = await Message.findAll({ where: { group_id: { [Op.in]: [groupIds] },status:1 } })
-        res.status(201).json({
+        console.log("groupIds *****************************************",groupIds)
+        const messages = await Message.findAll({ 
+            where: { group_id: { [Op.in]: groupIds },status:1 },
+            include: [
+                {
+                  model: User,
+                  as: 'user',
+                  attributes: ['id', 'name', 'email','mobile_no','role_id','status'] 
+                }
+              ],
+              attributes: [
+                'id',
+                'message',
+                'group_id',
+                'user_id',
+                [fn('DATE_FORMAT', literal('createdAt'), '%Y-%m-%d %H:%i:%s'), 'createdAt'],
+                [fn('DATE_FORMAT', literal('updatedAt'), '%Y-%m-%d %H:%i:%s'), 'updatedAt'],
+              ]
+        })
+        res.status(200).json({
             status: true,
             message: "All messages",
             data: messages

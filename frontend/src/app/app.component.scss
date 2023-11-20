@@ -3,6 +3,7 @@
     width: 100%;
     height: 100vh;
     --header-height: 80px;
+    --footer-height:50px
 }
 
 app-header {
@@ -15,13 +16,21 @@ app-header {
     color: #ffffff;
 }
 
+app-footer{
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
 
 main.main {
     position: relative;
     left: 0;
     width: 100%;
     display: block;
-    height: calc(100vh - var(--header-height));
+    height: calc(100vh - var(--header-height) - vat( --footer-height));
     overflow: auto;
     background-color: #F5F5F5;
 }

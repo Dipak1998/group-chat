@@ -14,7 +14,7 @@ import { UserService } from './services/user.service';
 import { SingletonService } from './services/singleton.service';
 import { AuthGuardService ,AuthGuardSecurityService_Admin} from './services/auth-guard.service';
 import { DatePipe } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from '@angular/material/select';
@@ -29,6 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS} from '@angular/material/core';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 import { SocketService } from './services/socket.service';
+import { FooterComponent } from './layout/footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -36,12 +37,14 @@ import { SocketService } from './services/socket.service';
     HeaderComponent,
     LoginComponent,
     DashboardComponent,
-    ChatHomeComponent
+    ChatHomeComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
     MatIconModule,

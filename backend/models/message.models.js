@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
           }
         }
       },
-      sender: {
+      user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         validate:{
@@ -49,7 +49,7 @@ module.exports = (sequelize, Sequelize) => {
       }
     }, {
       freezeTableName: true,
-      timestamps:false
+      timestamps:true
   });
     return Message;
   };

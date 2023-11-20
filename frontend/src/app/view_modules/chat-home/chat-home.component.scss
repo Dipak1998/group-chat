@@ -1,0 +1,168 @@
+.chat__home{
+    padding: 20px 20px 0 20px;
+    .action__btn {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin: 10px;
+    }
+
+    .chat__wrapper{
+        display: grid;
+        grid-template-columns: 360px 3fr;
+        height: 100%;
+        background: #0f3b6c;
+        color: #ffffff;
+
+        .chat__sidebar{
+            height: calc(100vh - 240px);
+            padding: 10px;
+            .search__group{
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+
+            }
+            .chat__group_list{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+
+                .group__items {
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    .icon{
+                        padding: 5px;
+                        flex: 1;
+                        mat-icon{
+                            font-size: 40px;
+                        }
+                    }
+                    .group__details{
+                        flex: 3;
+                        .name{
+                            font-size: 20px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+        }
+
+        .chat__window{
+            background-color: #dfdfdf;
+            position: relative;
+            color: black;
+
+            .header{
+                background: #ffffff;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 5px;
+                .name{
+                  font-size: 20px;
+                  color: #3f51b5;  
+                }
+            }
+            .message__list{
+                height: 60vh;
+                overflow-y: scroll;
+                overflow-x:hidden;
+                .message__items{
+                    display: flex;
+                    flex-direction: column;
+                    border: 1px solid #3f51b5;
+                    border-radius: 10px;
+                    padding: 10px;
+                    margin: 10px;
+
+                    .heading{
+                        .username{
+                            font-size: 18px;
+                            color: #3f51b5;
+                        }
+                        .time{
+                            font-size: 14px;
+                            color: #5e6cb8;
+                        }
+                    }
+                    .message{
+                        font-size: 16px;
+                        max-width: 40vw;
+                        word-wrap: break-word;
+                    }
+                }
+                .flex--end{
+                    align-items: flex-end;
+                    border: 1px solid #818bc8;
+
+                }
+            }
+            .msg__input_wrapper {
+                display: flex;
+                justify-content: flex-end;
+                padding: 0 20px;
+                color: #3f51b5;
+                background-color: #ffffff;
+                .msg__input{
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                    width: 150%;
+                    
+                    .mat-form-field{
+                        width: 50%;
+                    }
+                    .send__btn{
+                        cursor: pointer;
+                        width: 45px;
+                        height: 45px;
+                        border-radius: 50%;
+                        display: inline-flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        &:hover{
+                            color: #ffffff;
+                            background-color: #3f51b5
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+.group--not-selected{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: crimson;
+    height: 100%;
+}
+
+.group--not-avaiable{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #ffffff;
+    height: 100%;
+}
+.close__btn{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: red;
+    background: transparent;
+    cursor: pointer;
+    &:hover{
+        background-color: transparent;
+    }
+}

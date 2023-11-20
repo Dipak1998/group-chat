@@ -1,1 +1,111 @@
-<p>chat-home works!</p>
+<div class="chat__home">
+    <div class="action__btn" >
+        <button (click)="openCreateGroupPopup()" class="create__user" mat-stroked-button color="primary">Create Group <mat-icon>group_add</mat-icon></button>
+    </div>
+
+    <div class="chat__wrapper">
+        <div class="chat__sidebar">
+            <ng-container *ngIf="filteredGroup?.length >0">
+                <div class="search__group">
+                    <mat-form-field>
+                        <input (change)="onGroupNameInputChange(searchGroupName)" matInput type="text" placeholder="serach by group name" [(ngModel)]="searchGroupName">
+                    </mat-form-field>
+                </div>
+            </ng-container>
+            <div class="chat__group_list">
+                <ng-container *ngIf="filteredGroup?.length >0 ;else groupNotAvailable">
+                    <ng-container *ngFor="let group of groupList;let i=index">
+                        <div class="group__items">
+                            <div class="icon"><mat-icon>group_work</mat-icon></div>
+                            <div  class="group__details">
+                                <a (click)="onGroupClicked(group)" class="name">{{group.group_name}}</a>
+                                <!-- <div class="memebers">{{getGroupMemebers(group)?.length}}</div> -->
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+        <div class="chat__window">
+            <ng-container *ngIf="!isSelectedGroupEmpty ; else groupNotSelected">
+                <div class="header">
+                    <div class="name">{{selectedGroup?.group_name}}</div>
+                    <div class="add__memnber">
+                        <mat-form-field>
+                            <input matInput type="text" placeholder="Search By name or email">
+                        </mat-form-field>
+                        <button >Add</button>
+                    </div>
+                </div>
+                <div class="message__list">
+                    <ng-container *ngFor="let message of filteredMessages; let i=index">
+                        <div class="message__items" [class.flex--end]="message?.user_id == userId">
+                            <div class="heading">
+                                <span class="username">{{ (message?.user_id == userId )? 'Me':message?.user?.name}}</span>
+                                <span class="time">{{' ('+message?.createdAt + ')' || '' }}</span>
+                            </div>
+                            <div class="message">{{message?.message}}</div>
+                        </div>
+                    </ng-container>
+                </div>
+                <div class="msg__input_wrapper">
+                    <div class="msg__input">
+                        <mat-form-field class="example-full-width">
+                            <textarea matInput  placeholder="Write Something..."  [(ngModel)]="messageInput"></textarea>
+                          </mat-form-field>
+                        <button  mat-button color="primary" (click)="sendMessage()" class="send__btn">
+                            <mat-icon>send</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>
+
+<ng-template #groupNotSelected>
+    <div class="group--not-selected">
+        <p>Pleas select some group to chat with your friends</p>
+    </div>
+</ng-template>
+
+<ng-template #groupNotAvailable>
+    <div class="group--not-available">
+        <div class="action__btn" >
+            <button (click)="openCreateGroupPopup()" class="create__user" mat-stroked-button >Create Group <mat-icon>group_add</mat-icon></button>
+        </div>
+        <p>Pleas create a group to chat with your friends</p>
+    </div>
+</ng-template>
+
+<!-- group creation template -->
+<ng-template #createGroupRef>
+    <mat-card class="form__wrapper">
+        <a class="close__btn" (click)="closePopUp()"><mat-icon>cancel</mat-icon></a>
+        <mat-card-title class="heading">Create Group</mat-card-title>
+        <mat-card-content>
+            <form [formGroup]="createGroupForm">
+                <p>
+                    <mat-form-field>
+                    <input type="text" matInput placeholder="Enter Name" formControlName="group_name">
+                    </mat-form-field>
+                </p>
+                <p>
+                    <mat-form-field>
+                        <mat-select placeholder="Members" formControlName="members" multiple (openedChange)="onOpenChange(multiUserSearch)">
+                            <!-- <mat-select-trigger>{{members?.value }}</mat-select-trigger> -->
+                            <mat-form-field style="width: 60%;margin: 0 10px;">
+                                <input #multiUserSearch type="text" autocomplete="off" matInput placeholder="Search By Email" (input)="onInputChange($event)"/>
+                            </mat-form-field>
+                          <mat-option *ngFor="let user of filteredUserList" [value]="user.id">{{user.email}}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                </p>
+                <div class="submit">
+                    <button mat-raised-button color="primary" [class.disabled]="!createGroupForm.valid" [disabled]="!createGroupForm.valid" type="submit" (click)="createGroupClicked()" mat-button>Submit</button>
+                </div>
+    
+                </form>
+        </mat-card-content>
+    </mat-card>
+</ng-template>

@@ -30,6 +30,9 @@ db.user.belongsTo(db.role, { foreignKey: 'role_id' });
 db.user.hasMany(db.chat_group, { foreignKey: 'user_id' });
 db.chat_group.belongsTo(db.user, { foreignKey: 'user_id'});
 
+db.user.hasMany(db.message, { foreignKey: 'user_id' });
+db.message.belongsTo(db.user, { foreignKey: 'user_id'});
+
 
 
 module.exports = db;

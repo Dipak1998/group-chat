@@ -2,3 +2,30 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.form__wrapper{
+    position: relative;
+    .close__btn{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: red;
+        background: transparent;
+        cursor: pointer;
+        &:hover{
+            background-color: transparent;
+        }
+    }
+    .heading{
+        margin-bottom: 20px;
+    }
+    .mat-form-field{
+        width: 100%;
+    }
+    .submit button{
+        width: 100%;
+    }
+    
+
+}

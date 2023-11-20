@@ -46,6 +46,12 @@ export class UserService {
     let fullName = this.getTokenPayload()["name"];
     return fullName;
   }
+  getUserId(){
+    return this.getTokenPayload()["id"];
+  }
+  getEmail(){
+    return this.getTokenPayload()["email"];
+  }
   getUserName() {
     let payLoad = this.getTokenPayload();
     this.userName.next(payLoad["username"])

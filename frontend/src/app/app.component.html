@@ -5,4 +5,5 @@
   <main class="main" [class.is--presignin]="isPreSignIn">
       <router-outlet></router-outlet>
   </main>
+  <app-footer [ngStyle]="{display:(isPreSignIn) ? 'none':'flex'}"></app-footer>
 </div>

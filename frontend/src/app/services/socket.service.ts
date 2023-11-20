@@ -34,15 +34,12 @@ export class SocketService implements OnInit,AfterViewInit {
     console.log("Hey i am socket2");
   }
 
-  initializeSocket() {
+  async initializeSocket() {
     console.log("this.socket.connected",this.socket.connected )
     if(this.socket.connected){
       console.log("connected  ...111");
-      this.isSocketConnectionFailed = false;
-      this.joinGroup('admin@test.com','1');
+      this.isSocketConnectionFailed = false; 
       this.messageRecieved();
-
-      // this.storeVehicleInferranceData(); 
     }else{
       console.log("try to reconnect");
       this.isSocketConnectionFailed = true;
@@ -50,7 +47,6 @@ export class SocketService implements OnInit,AfterViewInit {
         //Your Code Here
         console.log("reconnect ...22222");
         this.isSocketConnectionFailed = false;
-        this.joinGroup('admin@test.com','1');
         this.messageRecieved();
       });
       this.socket.on('connect_error', (err)=>{
@@ -70,7 +66,7 @@ export class SocketService implements OnInit,AfterViewInit {
    
   }
 
-  joinGroup(email:string,group_id: string): void {
+  joinGroup(email:string,group_id: number): void {
     this.socket.emit('joinGroup', {email, group_id });
   }
 
