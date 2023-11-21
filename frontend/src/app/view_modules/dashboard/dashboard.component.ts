@@ -88,6 +88,7 @@ export class DashboardComponent implements OnInit {
 
   }
   closePopUp(){
+    this.createUserForm.reset()
     this.dialog.closeAll();
   }
 

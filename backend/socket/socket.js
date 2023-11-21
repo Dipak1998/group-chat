@@ -3,13 +3,7 @@ const messages = [];
 const { authSocket } = require('../middleware')
 module.exports = (io) => {
     console.log("socket is on");
-    // io.use((socket, next) => {
-    //     // Use the cors middleware for Socket.IO
-    //     cors()(socket.request, socket.request.res, next);
-    //   });
-    // Apply authentication middleware to the Socket.IO instance
     io.use((socket, next) => {
-        // Assuming authSocket.authenticateSocket is your authentication middleware
         authSocket.verifySocket(socket, next);
     });
     io.on('connection', (socket) => {

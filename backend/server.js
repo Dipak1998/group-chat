@@ -10,8 +10,8 @@ dotenv.config({path:'./config/dev.env'});
 const socketIo = require('socket.io');
 const socket = require('./socket/socket');
 const {authSocket} = require('./middleware');
-const server = http.createServer(app);
-const io = socketIo(server); 
+// const server = http.createServer(app);
+// const io = socketIo(server); 
 
 app.use(cors({
   origin: '*'
@@ -25,10 +25,10 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
-// Use Socket.IO authentication middleware for all Socket.IO connections
-io.use((socket, next) => {
-  authSocket.verifySocket(socket, next);
-});
+// // Use Socket.IO authentication middleware for all Socket.IO connections
+// io.use((socket, next) => {
+//   authSocket.verifySocket(socket, next);
+// });
 const db = require("./models");
 db.sequelize.sync();
 db.sequelize.sync({ force: false })
@@ -67,12 +67,12 @@ const DEVELOPMENT = process.env.NODE_ENV
 
 
 
-server.listen(PORT,'localhost',()=>{
+var server =app.listen(PORT,'0.0.0.0',()=>{
   var host = server.address().address;
   var port = server.address().port;
     console.log(`Serve is running in ${DEVELOPMENT} mode on ${PORT} port`);
     console.log("host:", host , ", port:", port)
 })
-// const io = socketIo(server);
-// app.io = io;
-// socket(io)
+const io = socketIo(server);
+app.io = io;
+socket(io)

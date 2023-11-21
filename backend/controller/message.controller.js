@@ -26,19 +26,37 @@ exports.sendMessage = async (req, res) => {
             return res.status(406).send({ message: "group name is not exist." });
         }
 
-        const user_idExist = await User.findOne({where: {id:user_id, status:1}});
-        if (!user_idExist) {
+        const user_isExist = await User.findOne({where: {id:user_id, status:1}});
+        if (!user_isExist) {
             return res.status(406).send({ message: "user is not exist." });
 
         }
 
         const newMessage = await Message.create({ message, group_id, user_id, status: 1 });
+        const newMessageSocket = await Message.findOne({ 
+            where: { id: newMessage.id,group_id:group_id,status:1 },
+            include: [
+                {
+                  model: User,
+                  as: 'user',
+                  attributes: ['id', 'name', 'email','mobile_no','role_id','status'] 
+                }
+              ],
+              attributes: [
+                'id',
+                'message',
+                'group_id',
+                'user_id',
+                [fn('DATE_FORMAT', literal('createdAt'), '%Y-%m-%d %H:%i:%s'), 'createdAt'],
+                [fn('DATE_FORMAT', literal('updatedAt'), '%Y-%m-%d %H:%i:%s'), 'updatedAt'],
+              ]
+        })
 
         /** Broadcasting the message to the group */
         try {
             const io = req.app.get('io');
-            const boardcastMsg = await io.to(group_id.toString()).emit('messageReceived', newMessage);
-            console.log("suucefully boardcast message", boardcastMsg, newMessage)
+            const boardcastMsg = await io.to(group_id).emit('messageReceived', newMessageSocket);
+            // console.log("suucefully boardcast message", boardcastMsg, newMessageSocket)
         } catch (error) {
             console.log("error while boardcasting message", error)
         }

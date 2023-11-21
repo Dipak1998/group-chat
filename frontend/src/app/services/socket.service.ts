@@ -1,5 +1,5 @@
 import { AfterViewInit, Injectable, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { SingletonService } from './singleton.service';
@@ -13,6 +13,9 @@ export class SocketService implements OnInit,AfterViewInit {
   private socket: Socket;
   socketUrl = environment.socketUrl;
   isSocketConnectionFailed:boolean = false;
+
+  private messageReceivedSubject = new Subject<any>();
+  messageReceived$ = this.messageReceivedSubject.asObservable();
 
   constructor(
     private ss:SingletonService,
@@ -70,14 +73,13 @@ export class SocketService implements OnInit,AfterViewInit {
     this.socket.emit('joinGroup', {email, group_id });
   }
 
-  sendMessage(group_id: string, newMessage: string): void {
-    this.socket.emit('messageReceived', { group_id: group_id, message: newMessage });
-  }
+
 
   messageRecieved(){
-    this.socket.on('messageReceived', (message) => {
+    console.log("message Received called ....")
+    this.socket.off('messageReceived').on('messageReceived', (message) => {
       console.log('Received message:', message);
-      // Handle the received message
+      this.messageReceivedSubject.next(message);
     });
   }
 

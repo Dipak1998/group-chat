@@ -44,7 +44,7 @@ exports.createUser = (req, res) => {
 
 exports.allUsers = (req, res) => {
     let query = { status: 1 };
-    let { user_list, name, email, mobile_no } = req.query || '';
+    let { user_list, name, email, mobile_no,search_query } = req.query || '';
 
     if (user_list) {
         user_list = JSON.parse(user_list)
@@ -66,7 +66,11 @@ exports.allUsers = (req, res) => {
 
     User.findAll({
         attributes: ['id', 'name', 'email', 'mobile_no', 'role_id', 'status'],
-        where: query
+        where: search_query  ? { 
+            [Op.or]:[
+            { name: { [Op.like]: `%${search_query}%` } },
+            { email: { [Op.like]: `%${search_query}%` } } 
+          ]} : query
     }).then((users) => {
         if (users) {
             res.status(200).json({

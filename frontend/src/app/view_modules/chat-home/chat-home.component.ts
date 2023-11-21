@@ -1,8 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSelect } from '@angular/material/select';
 import { NotificationsService } from 'angular2-notifications';
+import { debounceTime, switchMap } from 'rxjs/operators';
 import { SingletonService } from 'src/app/services/singleton.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { UserService } from 'src/app/services/user.service';
@@ -16,22 +18,33 @@ export class ChatHomeComponent implements OnInit {
 
 
   @ViewChild('createGroupRef') createGroupRef!: ElementRef;
+  @ViewChild('selectAddMemeber') selectAddMemeber!: MatSelect;
+  @ViewChild('selectAddMemeberOnCrtGrp') selectAddMemeberOnCrtGrp!: MatSelect;
+  
   groupList:Array<IGroupListApiResponse>|any = []; 
   filteredGroup:Array<IGroupListApiResponse> |any ;
   selectedGroup:IGroupListApiResponse|any = {};
   userList: Array<IUserApiResponse> | any = [];
-  filteredUserList: any ;
+  filteredUserList: any  = [];
   messageList: Array<IMessageApiReponse> | any = [];
-  filteredMessages: Array<IMessageApiReponse> | any = [];
+  // filteredMessages: Array<IMessageApiReponse> | any = [];
   messageInput!:string;
-  searchGroupName:string="";
-  selectedMembers = []
+
+  selectedMembers = [];
+
+  searchedMembers:Array<IUserApiResponse> | any = [];
 
   createGroupForm = this.ss.fb.group({
     group_name:['', Validators.required],
     members: [null, Validators.required],
     user_id: [this.userId, Validators.required]
   })
+
+  membersCtr = new FormControl( [],Validators.required);
+  searchUserCtr = new FormControl();
+  searchAddUserCtr = new FormControl();
+  searchGroupNameCtr = new FormControl();
+
   get isSelectedGroupEmpty(){
     return Object.keys(this.selectedGroup)?.length === 0;
   }
@@ -44,6 +57,19 @@ export class ChatHomeComponent implements OnInit {
     return this.user.getEmail()
   }
 
+  get filteredMessages() : Array<IMessageApiReponse> | any{
+    const groupId = this.selectedGroup?.id; 
+    return this.messageList.filter((message:IMessageApiReponse)=> message?.group_id == groupId)
+  }
+
+  get addMemberList(){
+    return this.searchedMembers.filter((user:IUserApiResponse)=> !JSON.parse(this.selectedGroup.members)?.includes(user?.id) )
+  }
+
+  get filterGroupList():Array<IGroupListApiResponse> |any{
+    return this.filteredGroup
+  }
+
   constructor(
     private socketService: SocketService,
     private ss:SingletonService,
@@ -51,13 +77,19 @@ export class ChatHomeComponent implements OnInit {
     private user:UserService,
     private dialog:MatDialog,
     private _notifications:NotificationsService
-  ) { }
+  ) { 
+    this.onUserSearch();
+  }
 
   ngOnInit(): void {
     // this.socketService.joinGroup('exampleGroup');
     this.getUserList();
     this.getGroupList();
-    this.getMessageList();
+    this.getMessageList(); 
+    this.socketService.messageReceived$.subscribe((message) => {
+      console.log('Update messageList:', message);
+      this.messageList.push(message); // Adjust this based on your data structure
+    });
   }
 
   openCreateGroupPopup(){
@@ -89,6 +121,7 @@ export class ChatHomeComponent implements OnInit {
         this.getGroupList();
         this.closePopUp();
       }
+      this.createGroupForm.reset();
     })
   }
   closePopUp(){
@@ -96,7 +129,6 @@ export class ChatHomeComponent implements OnInit {
   }
 
   getGroupMemebers(group:IGroupListApiResponse){
-    console.log("77777777777777777", group, typeof(group))
     return JSON.parse(group.members);
   }
 
@@ -134,31 +166,25 @@ export class ChatHomeComponent implements OnInit {
       console.log("res", res);
       if(res.status == 200){
         this.userList = res?.body?.data;
-        this.filteredUserList = this.userList;
       }else{
         this.userList = [];
-        this.filteredUserList = [];
       }
     })
   }
 
   onGroupClicked(group:IGroupListApiResponse){
     this.selectedGroup = group;
-    this.filterMessageByGrpId();
   }
 
-  filterMessageByGrpId(){
-    const groupId = this.selectedGroup?.id; 
-    this.filteredMessages = this.messageList.filter((message:IMessageApiReponse)=> message?.group_id == groupId)
-  }
+
 
   sendMessage(){
     const url = this.ss.baseUrl + "send_message";
     console.log("send message....", this.selectedGroup,"this.messageInput",this.messageInput);
     const payLoad = {
-      message: this.messageInput,
+      message: this.messageInput?.trim(),
       group_id: this.selectedGroup?.id,
-      user_id: this.selectedGroup?.user_id
+      user_id: this.userId
     }
     this.http.post(url,payLoad,{observe:"events"}).subscribe((res:any)=>{
       if(res.status == 201){
@@ -172,30 +198,82 @@ export class ChatHomeComponent implements OnInit {
         });
         this.messageInput = "";
         this.getMessageList();
-        this.filterMessageByGrpId();
+        // this.filterMessageByGrpId();
       }
     })
   }
 
-  onGroupNameInputChange(input:string){
-    this.filteredGroup = this.groupList.filter((group:IGroupListApiResponse) => group?.group_name == input)
+  onGroupNameInputChange(input:string|any){
+    this.filteredGroup =  this.groupList.filter((group:IGroupListApiResponse) => (group?.group_name?.toLowerCase()?.includes(input?.trim()?.toLowerCase())))
+
   }
   
-  onInputChange(event: any) {
-    console.log("called....", event)
-    const searchInput = event.target.value.toLowerCase();
 
-    this.filteredUserList = this.userList.filter((user:IUserApiResponse) => {
-      const email = user?.email.toLowerCase();
-      const name = user?.name.toLowerCase();
-      return email?.includes(searchInput);
-    });
-    console.log("this.filteredUserList", this.filteredUserList)
+  private onUserSearch(){
+    this.searchUserCtr.valueChanges.pipe(
+        debounceTime(300),
+        switchMap((searchTerm: string) => this.getUserBySearchQuery(searchTerm))
+      ).subscribe((res: any) => {
+        if(res.status ==200){
+          this.searchedMembers = res?.body?.data;
+          if (this.addMemberList.length > 0) {
+            this.selectAddMemeber.open();
+          } else {
+            this.selectAddMemeber.close();
+          }
+        }else{
+          this.searchedMembers = [];
+        }
+      });
+      this.searchAddUserCtr.valueChanges.pipe(
+        debounceTime(300),
+        switchMap((searchTerm: string) => this.getUserBySearchQuery(searchTerm))
+      ).subscribe((res: any) => {
+        if(res.status ==200){
+          this.filteredUserList = res?.body?.data;
+          if (this.addMemberList.length > 0) {
+            this.selectAddMemeberOnCrtGrp.open();
+          } else {
+            this.selectAddMemeberOnCrtGrp.close();
+          }
+        }else{
+          this.filteredUserList = [];
+        }
+      });
   }
-
-  onOpenChange(searchInput: any) {
+    
+  onOpenSearchChange(searchInput: any) {
     searchInput.value = "";
-    this.filteredUserList = this.userList;
+    this.searchedMembers = []; //this.userList;
   }
 
+  addMembers(){
+    const url = this.ss.baseUrl + "add_members";
+    const payload = {
+      group_name : this.selectedGroup.group_name,
+      members : JSON.stringify(this.membersCtr.value),
+      user_id : this.userId
+    }  
+    this.http.put(url,payload,{observe:"events"}).subscribe((res:any)=>{
+      if(res.status == 200){
+        console.log("res", res);
+        this._notifications.success('Members Added!', 'Successfully added members', {
+          timeOut: 1000,
+          showProgressBar: true,
+          pauseOnHover: true,
+          clickToClose: true,
+          position:["top" , "right"]
+        });
+        this.membersCtr.setValue(null);
+      }
+    })
+  }
+
+  async getUserBySearchQuery(searchQuery:string){
+    const url = this.ss.baseUrl + "users" ;
+    let params = new HttpParams();
+    params = params.append('search_query',searchQuery)
+    return this.http.get(url,{params, observe:"events"}).toPromise()
+    
+  }
 }

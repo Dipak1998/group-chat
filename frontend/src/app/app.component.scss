@@ -2,8 +2,8 @@
     display: block;
     width: 100%;
     height: 100vh;
-    --header-height: 80px;
-    --footer-height:50px
+    --header-height: 50px;
+    --footer-height:40px
 }
 
 app-header {
@@ -19,10 +19,12 @@ app-header {
 app-footer{
     justify-content: center;
     align-items: center;
-    position: fixed;
+    position: relative;
     bottom: 0;
     left: 0;
     width: 100%;
+    height: var(--footer-height);
+    background-color: #F5F5F5;
 }
 
 main.main {
@@ -30,7 +32,7 @@ main.main {
     left: 0;
     width: 100%;
     display: block;
-    height: calc(100vh - var(--header-height) - vat( --footer-height));
+    height: calc(100vh - var(--header-height) - var( --footer-height));
     overflow: auto;
     background-color: #F5F5F5;
 }

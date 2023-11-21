@@ -29,3 +29,84 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     
 
 }
+
+
+/* Responsive styles for Angular Material components */
+
+/* Responsive layout for tables */
+.mat-table {
+    overflow-x: auto;
+  }
+  
+  /* Responsive form layout */
+  .mat-form-field {
+    width: 100%;
+  }
+  
+  /* Responsive styling for mat-select */
+  .mat-select {
+    width: 100%;
+  }
+  
+  /* Responsive styling for all input elements */
+  .mat-input-element {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Responsive styling for radio buttons */
+  .mat-radio-button {
+    display: block;
+  }
+  
+  /* Responsive styling for checkboxes */
+  .mat-checkbox {
+    display: block;
+  }
+  
+  /* Responsive styling for sliders */
+  .mat-slider {
+    width: 100%;
+  }
+  
+  /* Adjusting layout for small screens */
+  @media screen and (max-width: 600px) {
+    /* Adjust table layout for small screens */
+    .mat-table {
+      overflow-x: auto;
+      display: block;
+    }
+  
+    /* Adjust form field layout for small screens */
+    .mat-form-field {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  
+    /* Adjust mat-select layout for small screens */
+    .mat-select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  
+    /* Adjust input elements for small screens */
+    .mat-input-element {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  
+    /* Adjust radio buttons for small screens */
+    .mat-radio-button {
+      display: block;
+    }
+  
+    /* Adjust checkboxes for small screens */
+    .mat-checkbox {
+      display: block;
+    }
+  
+    /* Adjust sliders for small screens */
+    .mat-slider {
+      width: 100%;
+    }
+  }  

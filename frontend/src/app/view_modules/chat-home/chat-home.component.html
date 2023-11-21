@@ -5,16 +5,14 @@
 
     <div class="chat__wrapper">
         <div class="chat__sidebar">
-            <ng-container *ngIf="filteredGroup?.length >0">
-                <div class="search__group">
-                    <mat-form-field>
-                        <input (change)="onGroupNameInputChange(searchGroupName)" matInput type="text" placeholder="serach by group name" [(ngModel)]="searchGroupName">
-                    </mat-form-field>
-                </div>
-            </ng-container>
+            <div class="search__group">
+                <mat-form-field>
+                    <input (input)="onGroupNameInputChange(searchGroupNameCtr.value)" [formControl]="searchGroupNameCtr" matInput type="text" placeholder="serach by group name" >
+                </mat-form-field>
+            </div>
             <div class="chat__group_list">
-                <ng-container *ngIf="filteredGroup?.length >0 ;else groupNotAvailable">
-                    <ng-container *ngFor="let group of groupList;let i=index">
+                <ng-container *ngIf="filterGroupList?.length >0 ;else groupNotAvailable">
+                    <ng-container *ngFor="let group of filterGroupList;let i=index">
                         <div class="group__items">
                             <div class="icon"><mat-icon>group_work</mat-icon></div>
                             <div  class="group__details">
@@ -30,11 +28,17 @@
             <ng-container *ngIf="!isSelectedGroupEmpty ; else groupNotSelected">
                 <div class="header">
                     <div class="name">{{selectedGroup?.group_name}}</div>
-                    <div class="add__memnber">
+                    <div class="add__member">
                         <mat-form-field>
-                            <input matInput type="text" placeholder="Search By name or email">
-                        </mat-form-field>
-                        <button >Add</button>
+                            <input [formControl]="searchUserCtr" matInput placeholder="Search by name or email">
+                            <mat-select #selectAddMemeber placeholder="Add Friends" [formControl]="membersCtr" multiple>
+                              <mat-select-trigger>
+                                {{ membersCtr?.value?.length ? membersCtr?.value?.length + ' friends selected' : 'No options selected' }}
+                              </mat-select-trigger>
+                              <mat-option *ngFor="let user of addMemberList" [value]="user.id">{{user.email}}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          <button [class.disabled]="!membersCtr?.status"  [disabled]="!membersCtr?.status"  class="action__btn" (click)="addMembers()" mat-raised-button color="primary">Add Members</button>
                     </div>
                 </div>
                 <div class="message__list">
@@ -92,14 +96,14 @@
                 </p>
                 <p>
                     <mat-form-field>
-                        <mat-select placeholder="Members" formControlName="members" multiple (openedChange)="onOpenChange(multiUserSearch)">
-                            <!-- <mat-select-trigger>{{members?.value }}</mat-select-trigger> -->
-                            <mat-form-field style="width: 60%;margin: 0 10px;">
-                                <input #multiUserSearch type="text" autocomplete="off" matInput placeholder="Search By Email" (input)="onInputChange($event)"/>
-                            </mat-form-field>
-                          <mat-option *ngFor="let user of filteredUserList" [value]="user.id">{{user.email}}</mat-option>
-                        </mat-select>
-                      </mat-form-field>
+                    <input [formControl]="searchAddUserCtr" multiple matInput placeholder="Members">
+                    <mat-select #selectAddMemeberOnCrtGrp placeholder="Add Friends" formControlName="members" multiple>
+                        <mat-select-trigger>
+                        {{ createGroupForm?.value?.members?.length ? createGroupForm?.value?.members?.length + ' member selected' : 'No options selected' }}
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let user of filteredUserList" [value]="user.id">{{user.email}}</mat-option>
+                    </mat-select>
+                    </mat-form-field>
                 </p>
                 <div class="submit">
                     <button mat-raised-button color="primary" [class.disabled]="!createGroupForm.valid" [disabled]="!createGroupForm.valid" type="submit" (click)="createGroupClicked()" mat-button>Submit</button>
