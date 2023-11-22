@@ -34,15 +34,12 @@ module.exports = (sequelize, Sequelize) => {
         }
       },
       likes: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        default:0
       },
       like_user_id: {
         type: Sequelize.JSON,
-        validate:{
-          isJSON:{
-            msg:"va;lue should be valid json."
-          }
-        }
+        default:[]
       },
       status:{
         type: Sequelize.INTEGER

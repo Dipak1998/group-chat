@@ -27,8 +27,11 @@
         <div class="chat__window">
             <ng-container *ngIf="!isSelectedGroupEmpty ; else groupNotSelected">
                 <div class="header">
-                    <div class="name">{{selectedGroup?.group_name}}</div>
-                    <div class="add__member">
+                    <div class="name">
+                        <span class="text" >{{selectedGroup?.group_name}}</span>
+                        <span class="count" >{{'('+selectedGroup?.members?.length+')'}}</span>
+                    </div>
+                    <div class="add__member" *ngIf="selectedGroup?.user_id == userId">
                         <mat-form-field>
                             <input [formControl]="searchUserCtr" matInput placeholder="Search by name or email">
                             <mat-select #selectAddMemeber placeholder="Add Friends" [formControl]="membersCtr" multiple>
@@ -38,7 +41,7 @@
                               <mat-option *ngFor="let user of addMemberList" [value]="user.id">{{user.email}}</mat-option>
                             </mat-select>
                           </mat-form-field>
-                          <button [class.disabled]="!membersCtr?.status"  [disabled]="!membersCtr?.status"  class="action__btn" (click)="addMembers()" mat-raised-button color="primary">Add Members</button>
+                          <button [class.disabled]="!membersCtr?.valid"  [disabled]="!membersCtr?.valid"  class="action__btn" (click)="addMembers()" mat-raised-button color="primary">Add Members</button>
                     </div>
                 </div>
                 <div class="message__list">
@@ -48,7 +51,29 @@
                                 <span class="username">{{ (message?.user_id == userId )? 'Me':message?.user?.name}}</span>
                                 <span class="time">{{' ('+message?.createdAt + ')' || '' }}</span>
                             </div>
-                            <div class="message">{{message?.message}}</div>
+                            <div class="message"> 
+                                <span class="text">
+                                    {{message?.message}}
+                                </span>
+                                <ng-container *ngIf="message?.user_id === userId">
+                                    <span class="icon" *ngIf="isUserLikedMessage(message) ">
+                                        <img  src="assets/icons/heart-filled.svg" />
+                                        {{'('+message?.likes +')'}}
+                                    </span>
+                                </ng-container>
+                                <ng-container *ngIf="message?.user_id !== userId">
+                                    <span title="Dislike" class="icon" *ngIf="isUserLikedMessage(message)">
+                                        <img (click)="likeMessageClicked(message?.id)" src="assets/icons/heart-filled.svg" />
+                                        {{'('+message?.likes +')'}}
+                                    </span>
+                                    <span title="Like" class="icon" *ngIf="!isUserLikedMessage(message)">
+                                        <img (click)="likeMessageClicked(message?.id)" src="assets/icons/heart-outline.svg" />
+                                        <ng-container *ngIf="message?.likes > 0">
+                                            {{'('+ message?.likes +')'}}
+                                        </ng-container>
+                                    </span>
+                                </ng-container>
+                            </div>
                         </div>
                     </ng-container>
                 </div>

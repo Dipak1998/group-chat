@@ -18,7 +18,7 @@ export class DashboardComponent implements OnInit {
 
   @ViewChild('createEditUserRef') createEditUserRef!: ElementRef;
   dataSource:any = new MatTableDataSource();
-  columnsToDisplay = ['s_no','name','email','mobile_no','role','status','action'];
+  columnsToDisplay = ['s_no','name','email','mobile_no','role','status']; //,'action'
   isEditForm:boolean = false;
 
   createUserForm = this.ss.fb.group({

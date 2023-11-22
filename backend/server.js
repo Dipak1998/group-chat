@@ -57,17 +57,16 @@ app.get('/api/',(req,res)=>{
   res.status(200).send("Welcome to admin panel")
 })
 app.use(express.static(path.join(__dirname, "template")));
-app.get('/',function(req,res) {
-  console.log("path.join(__dirname+'/'+template+'/index.html')",path.join(__dirname+'/'+'template'+'/index.html'))
-  res.sendFile(path.join('/index.html'));
-})
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'template/index.html'));
+});
 
 const PORT = process.env.PORT || 4000
 const DEVELOPMENT = process.env.NODE_ENV
 
 
 
-var server =app.listen(PORT,'0.0.0.0',()=>{
+var server =app.listen(PORT,'localhost',()=>{
   var host = server.address().address;
   var port = server.address().port;
     console.log(`Serve is running in ${DEVELOPMENT} mode on ${PORT} port`);

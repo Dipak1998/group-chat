@@ -22,7 +22,7 @@ export interface IMessageApiReponse{
     user_id: number;
     user:IUserApiResponse;
     likes: number;
-    like_user_id: string;
+    like_user_id: Array<any> |any;
     status: number;
     createdAt?:string;
     updatedAt?:string;

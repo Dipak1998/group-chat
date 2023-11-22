@@ -17,6 +17,9 @@ export class SocketService implements OnInit,AfterViewInit {
   private messageReceivedSubject = new Subject<any>();
   messageReceived$ = this.messageReceivedSubject.asObservable();
 
+  private messageLikedSubject = new Subject<any>();
+  messageLiked$ = this.messageLikedSubject.asObservable();
+
   constructor(
     private ss:SingletonService,
     private user:UserService
@@ -43,6 +46,7 @@ export class SocketService implements OnInit,AfterViewInit {
       console.log("connected  ...111");
       this.isSocketConnectionFailed = false; 
       this.messageRecieved();
+      this.likedMessage();
     }else{
       console.log("try to reconnect");
       this.isSocketConnectionFailed = true;
@@ -51,6 +55,8 @@ export class SocketService implements OnInit,AfterViewInit {
         console.log("reconnect ...22222");
         this.isSocketConnectionFailed = false;
         this.messageRecieved();
+        this.likedMessage();
+
       });
       this.socket.on('connect_error', (err)=>{
         console.log("connect_error ...",err);
@@ -80,6 +86,14 @@ export class SocketService implements OnInit,AfterViewInit {
     this.socket.off('messageReceived').on('messageReceived', (message) => {
       console.log('Received message:', message);
       this.messageReceivedSubject.next(message);
+    });
+  }
+
+  likedMessage(){
+    console.log("message liked  called ....")
+    this.socket.off('messageLiked').on('messageLiked', (message) => {
+      console.log(' message liked:', message);
+      this.messageLikedSubject.next(message);
     });
   }
 

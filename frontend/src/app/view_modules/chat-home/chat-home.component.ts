@@ -36,7 +36,7 @@ export class ChatHomeComponent implements OnInit {
 
   createGroupForm = this.ss.fb.group({
     group_name:['', Validators.required],
-    members: [null, Validators.required],
+    members: [[], Validators.required],
     user_id: [this.userId, Validators.required]
   })
 
@@ -63,7 +63,7 @@ export class ChatHomeComponent implements OnInit {
   }
 
   get addMemberList(){
-    return this.searchedMembers.filter((user:IUserApiResponse)=> !JSON.parse(this.selectedGroup.members)?.includes(user?.id) )
+    return this.searchedMembers.filter((user:IUserApiResponse)=> !this.selectedGroup.members?.includes(user?.id) )
   }
 
   get filterGroupList():Array<IGroupListApiResponse> |any{
@@ -88,7 +88,12 @@ export class ChatHomeComponent implements OnInit {
     this.getMessageList(); 
     this.socketService.messageReceived$.subscribe((message) => {
       console.log('Update messageList:', message);
-      this.messageList.push(message); // Adjust this based on your data structure
+      this.messageList.push(message); 
+    });
+
+    this.socketService.messageLiked$.subscribe((message) => {
+      console.log('Update messageList as message liked:', message);
+      this.updateMessageBasedOnId(message);
     });
   }
 
@@ -104,7 +109,7 @@ export class ChatHomeComponent implements OnInit {
     const url =this.ss.baseUrl +"create_group";
     const payload = {
       group_name :formValue?.group_name,
-      members :JSON.stringify(formValue?.members),
+      members :formValue?.members, //JSON.stringify(formValue?.members),
       user_id :formValue?.user_id,
     }
     console.log("payload", payload);
@@ -125,11 +130,13 @@ export class ChatHomeComponent implements OnInit {
     })
   }
   closePopUp(){
+    this.createGroupForm.reset();
+    this.searchAddUserCtr.setValue('')
     this.dialog.closeAll();
   }
 
   getGroupMemebers(group:IGroupListApiResponse){
-    return JSON.parse(group.members);
+    return group.members;
   }
 
   getGroupList(){
@@ -174,6 +181,9 @@ export class ChatHomeComponent implements OnInit {
 
   onGroupClicked(group:IGroupListApiResponse){
     this.selectedGroup = group;
+    this.membersCtr.reset();
+    this.searchUserCtr.reset();
+    this.filteredUserList = [];
   }
 
 
@@ -212,7 +222,7 @@ export class ChatHomeComponent implements OnInit {
   private onUserSearch(){
     this.searchUserCtr.valueChanges.pipe(
         debounceTime(300),
-        switchMap((searchTerm: string) => this.getUserBySearchQuery(searchTerm))
+        switchMap((searchText: string) => this.getUserBySearchQuery(searchText))
       ).subscribe((res: any) => {
         if(res.status ==200){
           this.searchedMembers = res?.body?.data;
@@ -227,7 +237,7 @@ export class ChatHomeComponent implements OnInit {
       });
       this.searchAddUserCtr.valueChanges.pipe(
         debounceTime(300),
-        switchMap((searchTerm: string) => this.getUserBySearchQuery(searchTerm))
+        switchMap((searchText: string) => this.getUserBySearchQuery(searchText))
       ).subscribe((res: any) => {
         if(res.status ==200){
           this.filteredUserList = res?.body?.data;
@@ -251,7 +261,7 @@ export class ChatHomeComponent implements OnInit {
     const url = this.ss.baseUrl + "add_members";
     const payload = {
       group_name : this.selectedGroup.group_name,
-      members : JSON.stringify(this.membersCtr.value),
+      members : this.membersCtr.value,
       user_id : this.userId
     }  
     this.http.put(url,payload,{observe:"events"}).subscribe((res:any)=>{
@@ -265,6 +275,7 @@ export class ChatHomeComponent implements OnInit {
           position:["top" , "right"]
         });
         this.membersCtr.setValue(null);
+        this.searchUserCtr.setValue('');
       }
     })
   }
@@ -275,5 +286,35 @@ export class ChatHomeComponent implements OnInit {
     params = params.append('search_query',searchQuery)
     return this.http.get(url,{params, observe:"events"}).toPromise()
     
+  }
+
+  isUserLikedMessage(message:IMessageApiReponse):boolean{
+    const likedUserList = (message?.like_user_id?.length > 0) ? message?.like_user_id : [];
+    return likedUserList?.length >0 ? likedUserList?.includes(this.userId) : false; 
+  }
+
+  likeMessageClicked(messageId:number){
+    const url = this.ss.baseUrl + "like_message";
+    const payload = {
+      message_id : messageId
+    }
+    console.log("payload to like message", payload);
+    this.http.put(url,payload,{observe:"events"}).subscribe((res:any)=>{
+      if(res.status ==200){
+        console.log("res", res);
+        // this.getMessageList();
+        this.updateMessageBasedOnId(res?.body?.data)
+      }
+    })
+  }
+
+  updateMessageBasedOnId(updatedMessage:IMessageApiReponse){
+    this.messageList.map((message:IMessageApiReponse)=> {
+      if(message.id == updatedMessage.id){
+        message.likes = updatedMessage.likes;
+        message.like_user_id = updatedMessage.like_user_id;
+      }
+    });
+
   }
 }

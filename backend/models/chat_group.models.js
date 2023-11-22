@@ -24,11 +24,11 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         validate: {
           notNull: {
-            msg: "Minimum one memebr is required.",
+            msg: "Minimum one member is required.",
           },
-          isJSON:{
-            msg: "Members should be a valid json list.",
-          }
+          // isJSON:{
+          //   msg: "Members should be a valid json list.",
+          // }
         },
       },
       user_id: {

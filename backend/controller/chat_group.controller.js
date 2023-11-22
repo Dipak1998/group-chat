@@ -1,13 +1,15 @@
 const db = require('../models/index')
 const ChatGroup = db.chat_group
+const User = db.user
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 //create a group 
 exports.createGroup = async (req, res) => {
   try {
-    const { group_name, members, user_id } = req.body;
-    const group = await ChatGroup.create({ group_name, members, user_id, status: 1 });
+    let { group_name, members, user_id } = req.body;
+    let newMembers = [...members ,req.userId ];
+    const group = await ChatGroup.create({ group_name, members:newMembers, user_id, status: 1 });
     res.status(201).json({
       status: true,
       message: "Group created successfully",
@@ -31,7 +33,15 @@ exports.createGroup = async (req, res) => {
 exports.groupList = async (req, res) => {
   try {
     const user_id = req.userId
-    ChatGroup.findAll({ where: { status: 1, members: { [Op.substring]: user_id.toString() } } })
+    ChatGroup.findAll({where: { status: 1, members: { [Op.substring]: user_id.toString() }},
+    include: [
+      {
+        model: User,
+        as: 'user',
+        attributes: ['id', 'name', 'email', 'mobile_no'],
+      },
+    ],
+  })
       .then((groups) => {
         if (groups) {
           res.status(200).json({
@@ -48,8 +58,13 @@ exports.groupList = async (req, res) => {
         }
       })
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      console.error(error);;
+      if (error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError") {
+        const errors = error.errors.map((error) => error.message);
+        res.status(400).json({ errors });
+      } else {
+        throw error
+      }
   }
 }
 
@@ -58,16 +73,14 @@ exports.groupList = async (req, res) => {
 
 exports.addMembers = async (req, res) => {
   try {
-    console.log("req.body", req.body);
     const { group_name, members, user_id } = req.body;
     const group = await ChatGroup.findOne({ where: { group_name: group_name, user_id: user_id } });
     if (!group) {
       return res.status(409).send({ message: "group is not exist." });
     }
-    console.log("group.members", group, group.members);
     const existingMembers = JSON.parse(group.members);
     const updatedMembers = existingMembers.concat(JSON.parse(members));
-    await group.update({ members: JSON.stringify(updatedMembers) });
+    await group.update({ members: updatedMembers });
     res.status(200).json({
       status: true,
       message: "Member Added successfully.",

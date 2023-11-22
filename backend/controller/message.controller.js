@@ -47,6 +47,8 @@ exports.sendMessage = async (req, res) => {
                 'message',
                 'group_id',
                 'user_id',
+                'likes',
+                'like_user_id',
                 [fn('DATE_FORMAT', literal('createdAt'), '%Y-%m-%d %H:%i:%s'), 'createdAt'],
                 [fn('DATE_FORMAT', literal('updatedAt'), '%Y-%m-%d %H:%i:%s'), 'updatedAt'],
               ]
@@ -112,6 +114,8 @@ exports.allMessage = async (req, res) => {
                 'message',
                 'group_id',
                 'user_id',
+                'likes',
+                'like_user_id',
                 [fn('DATE_FORMAT', literal('createdAt'), '%Y-%m-%d %H:%i:%s'), 'createdAt'],
                 [fn('DATE_FORMAT', literal('updatedAt'), '%Y-%m-%d %H:%i:%s'), 'updatedAt'],
               ]
@@ -136,45 +140,39 @@ exports.allMessage = async (req, res) => {
 exports.likeMessage = async (req, res) => {
     try {
         const user_id = req.userId;
-        const { message_id } = req.body;
+        const { message_id } = req.body;    
         const message = await Message.findByPk(message_id);
-        let cnt = 1;
         if (!message) {
-            return res.status(409).send({ message: "message not exist." });
+            return res.status(409).send({ message: "Message does not exist." });
         }
-        /** have to check the user already liked or not
-         * if already liked then second time have to removed 
-         * if not liked then have to increment the like
-         */
-        let likedUsers = message.like_user_id ? message.like_user_id : [];
-        let filterLikedUsers = JSON.parse(likedUsers);
-        console.log("likedUsers:", likedUsers, typeof(likedUsers));
-        console.log("filterLikedUsers ......", filterLikedUsers, typeof(filterLikedUsers))
-        if (likedUsers.includes(user_id)) {
+        const likedUsers = message.like_user_id || [];
+        const isLiked = likedUsers.includes(user_id);
+    
+        let cnt = 1;
+        if (isLiked) {
             cnt = -1;
-            filterLikedUsers = JSON.parse(likedUsers).filter((item) => item != user_id);
-        }else{
-            filterLikedUsers.push(user_id)
+            message.like_user_id = likedUsers.filter(item => item !== user_id);
+        } else {
+            message.like_user_id = [...likedUsers, user_id];
         }
-        message.likes = message.likes ? message.likes + cnt : 1;
-        console.log("filterLikedUsers ......", filterLikedUsers)
-        message.like_user_id = JSON.stringify(filterLikedUsers);
+    
+        message.likes = (message.likes || 0) + cnt;
+    
         await message.save();
-
-        /** Broadcasting the message like details to the group */
+    
+        // Broadcasting the message like details to the group
         try {
             const io = req.app.get('io');
-            const boardcastMsg = await io.to(message.group_id.toString()).emit('messageLiked', message);
-            console.log("suucefully boardcast message like", boardcastMsg, message)
+            await io.to(message.group_id).emit('messageLiked', message);
+            console.log("Successfully broadcasted message like", message);
         } catch (error) {
-            console.log("error while boardcasting message", error)
+            console.log("Error while broadcasting message", error);
         }
         res.status(200).json({
             status: true,
             message: "Successfully liked the message",
             data: message
-        })
-
+        });    
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
